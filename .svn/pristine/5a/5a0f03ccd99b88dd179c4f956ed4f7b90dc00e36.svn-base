@@ -1,0 +1,316 @@
+package graph;
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+import java.util.List;
+import java.util.ArrayList;
+
+
+
+/** Unit tests for the Traversal class.
+ *  @author Yuxi Chen
+ */
+public class ShortestPathsTesting {
+
+    @Test
+    public void test2() {
+        DirectedGraph g = new DirectedGraph();
+        LabeledGraph<Integer, Double> h =
+            new LabeledGraph<Integer, Double>(g);
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.remove(1);
+        h.add(4, 5, 11.2);
+        h.add(4, 2, 12.2);
+        h.add(4, 3, 102.0);
+        h.add(2, 3, 6.5);
+        h.add(5, 3, 9.1);
+        h.add(5, 6, 30.0);
+        
+
+        SSPTester t = new SSPTester(h, 4);
+        t.setPaths();
+        t.pathTo(3);
+        List<Integer> correctShortestPath = new ArrayList<Integer>();
+        correctShortestPath.add(4);
+        correctShortestPath.add(2);
+        correctShortestPath.add(3);
+        assertEquals((int) 4, (int) t.getBestPath().get(0));
+        assertEquals((int) 2, (int) t.getBestPath().get(1));
+        assertEquals((int) 3, (int) t.getBestPath().get(2));
+    }
+
+    @Test
+    public void shortestPathsOne() {
+        DirectedGraph g = new DirectedGraph();
+        LabeledGraph<Integer, Double> l = new LabeledGraph<Integer, Double>(g);
+        l.add();
+        l.add();
+        l.add();
+        l.add();
+        l.add();
+        l.add();
+        l.add(1, 2, 3.0);
+        l.add(2, 4, 2.0);
+        l.add(2, 3, 1.0);
+        l.add(4, 5, 7.0);
+        l.add(3, 6, 9.0);
+        l.add(5, 6, 4.0);
+        SSPTester s = new SSPTester(l, 1);
+        s.setPaths();
+        s.pathTo(6);
+        assertEquals(0, s.getPredecessor(1));
+        assertEquals(1, s.getPredecessor(2));
+        assertEquals(2, s.getPredecessor(3));
+        assertEquals(2, s.getPredecessor(4));
+        assertEquals(4, s.getPredecessor(5));
+        assertEquals(3, s.getPredecessor(6));
+        assertEquals((int) 1, (int) s.getBestPath().get(0));
+        assertEquals((int) 2, (int) s.getBestPath().get(1));
+        assertEquals((int) 3, (int) s.getBestPath().get(2));
+        assertEquals((int) 6, (int) s.getBestPath().get(3));
+    }
+
+    @Test
+    public void shortestPathsThree() {
+        DirectedGraph g = new DirectedGraph();
+        LabeledGraph<Integer, Double> l = new LabeledGraph<Integer, Double>(g);
+        l.add();
+        l.add();
+        l.add();
+        l.add();
+        l.add();
+        l.add();
+        l.add();
+        l.add();
+        l.add();
+        l.add();
+        l.add();
+
+
+        l.add(1, 2, 5.0);
+        l.add(1, 3, 1.0);
+        l.add(2, 4, 6.0);
+        l.add(4, 6, 7.0);
+        l.add(3, 5, 2.0);
+        l.add(5, 7, 3.0);
+        l.add(1, 8, 1.0);
+        l.add(8, 9, 1.0);
+        l.add(9, 10, 1.0);
+        l.add(2, 11, 2.0);
+        l.add(11, 6, 2.0);
+
+        SSPTester s = new SSPTester(l, 1);
+        s.setPaths();
+        s.pathTo(6);
+
+        assertEquals(0, s.getPredecessor(1));
+        assertEquals(1, s.getPredecessor(8));
+        assertEquals(1, s.getPredecessor(2));
+        assertEquals(1, s.getPredecessor(3));
+        assertEquals(2, s.getPredecessor(4));
+        assertEquals(3, s.getPredecessor(5));
+        assertEquals(11, s.getPredecessor(6));
+        assertEquals(0, s.getPredecessor(1));
+        assertEquals((int) 1, (int) s.getBestPath().get(0));
+        assertEquals((int) 2, (int) s.getBestPath().get(1));
+        assertEquals((int) 11, (int) s.getBestPath().get(2));
+        assertEquals((int) 6, (int) s.getBestPath().get(3));
+    }
+
+    @Test
+    public void shortestPathsTwo() {
+        DirectedGraph g = new DirectedGraph();
+        LabeledGraph<Integer, Double> l = new LabeledGraph<Integer, Double>(g);
+        l.add();
+        l.add();
+        l.add();
+        l.add();
+        l.add();
+        l.add();
+        l.add();
+        l.add(1, 2, 5.0);
+        l.add(1, 3, 1.0);
+        l.add(2, 4, 6.0);
+        l.add(4, 6, 7.0);
+        l.add(3, 5, 2.0);
+        l.add(5, 7, 3.0);
+        SSPTester s = new SSPTester(l, 1);
+        s.setPaths();
+        s.pathTo(6);
+        assertEquals(0, s.getPredecessor(1));
+        assertEquals(1, s.getPredecessor(2));
+        assertEquals(1, s.getPredecessor(3));
+        assertEquals(2, s.getPredecessor(4));
+        assertEquals(3, s.getPredecessor(5));
+        assertEquals(4, s.getPredecessor(6));
+        assertEquals(5, s.getPredecessor(7));
+        assertEquals((int) 1, (int) s.getBestPath().get(0));
+        assertEquals((int) 2, (int) s.getBestPath().get(1));
+        assertEquals((int) 4, (int) s.getBestPath().get(2));
+        assertEquals((int) 6, (int) s.getBestPath().get(3));
+    }
+
+
+    @Test
+    public void shortestPathsFour() {
+        DirectedGraph g = new DirectedGraph();
+        LabeledGraph<Integer, Double> l = new LabeledGraph<Integer, Double>(g);
+        l.add();
+        l.add();
+        l.add();
+        l.add();
+        l.add(1, 2, 4.0);
+        l.add(1, 3, 1.0);
+        l.add(3, 2, 2.0);
+        l.add(2, 4, 3.0);
+        l.add(3, 4, 7.0);
+        SSPTester s = new SSPTester(l, 1);
+        s.setPaths();
+        s.pathTo(4);
+        assertEquals((int) 1, (int) s.getBestPath().get(0));
+        assertEquals((int) 3, (int) s.getBestPath().get(1));
+        assertEquals((int) 2, (int) s.getBestPath().get(2));
+        assertEquals((int) 4, (int) s.getBestPath().get(3));
+
+    }
+
+     @Test
+    public void test3() {
+        UndirectedGraph h = new UndirectedGraph();
+        
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        h.add();
+        System.out.println("So i got here");
+    }
+    
+
+}

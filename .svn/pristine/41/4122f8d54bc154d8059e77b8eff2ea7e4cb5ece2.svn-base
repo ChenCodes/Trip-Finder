@@ -1,0 +1,290 @@
+package graph;
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
+import graph.DirectedGraph;
+import java.util.Collections;
+
+
+
+/** Unit tests for the Traversal class.
+ *  @author Yuxi Chen
+ */
+public class PathsTesting {
+    private class SSPTester extends SimpleShortestPaths {
+        /** The shortest paths in G from SOURCE. */
+        public SSPTester(Graph G, int source) {
+            this(G, source, 0);
+        }
+
+        /** A shortest path in G from SOURCE to DEST. */
+        public SSPTester(Graph G, int source, int dest) {
+            super(G, source, dest);
+            _weights = new HashMap<Integer, Double>();
+            _G = G;
+            _currPredecessor = new HashMap<Integer, Integer>();
+            _source = source;
+            _dest = dest;
+            for (Integer current : _weights.keySet()) {
+                System.out.println("Our current is: " + current + " and the weight is: " + Double.POSITIVE_INFINITY);
+                _weights.put(current, Double.POSITIVE_INFINITY);
+            }
+
+        }
+
+        @Override
+        public double getWeight(int v) {
+            LabeledGraph h = ((LabeledGraph) _G);
+            if (_weights.get(v) == null) {
+                return Double.POSITIVE_INFINITY;
+            }
+            // System.out.println("Do I get here??" + " Our current V is: " + v + " and weight is: " + _weights.get(v));
+            if (!_G.contains(v)) {
+                System.out.println("Obviously we don't have this vertex: " + v);
+                throw new AssertionError("We don't have this vertex, can't get the weight.");
+            }
+            return _weights.get(v);
+        }
+
+        @Override
+        protected double getWeight(int u, int v) {
+            LabeledGraph h = ((LabeledGraph) _G);
+            return ((double) h.getLabel(u, v));
+        }
+
+        protected void setWeight(int v, double w) {
+            System.out.println("Have we set weights? Yes: v and w are: " + v + " " + w);
+            LabeledGraph h = ((LabeledGraph) _G);
+            h.setLabel(v, w);
+            _weights.put(v, w);
+        }
+
+        @Override
+        public int getPredecessor(int v) {
+            if (!_currPredecessor.keySet().contains(v)) {
+                return 0;
+            }
+            return _currPredecessor.get(v);
+        }
+
+        @Override
+        protected void setPredecessor(int v, int u) {
+            _currPredecessor.put(v, u);
+        }
+
+    /** This holds the information about my weights. */
+    private HashMap<Integer, Double> _weights;
+
+    private HashMap<Integer, Integer> _currPredecessor;
+
+    /** This holds a copy of the current graph I'm working with. */
+    private Graph _G;
+
+    private int _source;
+
+    private int _dest;
+
+}
+
+    // @Test
+    // public void test2() {
+    //     DirectedGraph g = new DirectedGraph();
+    //     LabeledGraph<Integer, Double> h =
+    //         new LabeledGraph<Integer, Double>(g);
+    //     h.add();
+    //     h.add();
+    //     h.add();
+    //     h.add();
+    //     h.add();
+    //     h.add();
+    //     h.remove(1);
+    //     h.add(4, 5, 11.2);
+    //     h.add(4, 2, 12.2);
+    //     h.add(4, 3, 102.0);
+    //     h.add(2, 3, 6.5);
+    //     h.add(5, 3, 9.1);
+    //     h.add(5, 6, 30.0);
+        
+
+    //     SSPTester t = new SSPTester(h, 4);
+    //     t.setPaths();
+    //     t.pathTo(3);
+    //     List<Integer> correctShortestPath = new ArrayList<Integer>();
+    //     correctShortestPath.add(4);
+    //     correctShortestPath.add(2);
+    //     correctShortestPath.add(3);
+    //     assertEquals((int) 4, (int) t.getBestPath().get(0));
+    //     assertEquals((int) 2, (int) t.getBestPath().get(1));
+    //     assertEquals((int) 3, (int) t.getBestPath().get(2));
+    //     System.out.println(t.getBestPath());
+    // }
+
+    // @Test
+    // public void shortestPathsOne() {
+    //     DirectedGraph g = new DirectedGraph();
+    //     LabeledGraph<Integer, Double> l = new LabeledGraph<Integer, Double>(g);
+    //     l.add();
+    //     l.add();
+    //     l.add();
+    //     l.add();
+    //     l.add();
+    //     l.add();
+    //     l.add(1, 2, 3.0);
+    //     l.add(2, 4, 2.0);
+    //     l.add(2, 3, 1.0);
+    //     l.add(4, 5, 7.0);
+    //     l.add(3, 6, 9.0);
+    //     l.add(5, 6, 4.0);
+    //     SSPTester s = new SSPTester(l, 1);
+    //     s.setPaths();
+    //     s.pathTo(6);
+    //     assertEquals(0, s.getPredecessor(1));
+    //     assertEquals(1, s.getPredecessor(2));
+    //     assertEquals(2, s.getPredecessor(3));
+    //     assertEquals(2, s.getPredecessor(4));
+    //     assertEquals(4, s.getPredecessor(5));
+    //     assertEquals(3, s.getPredecessor(6));
+    //     assertEquals((int) 1, (int) s.getBestPath().get(0));
+    //     assertEquals((int) 2, (int) s.getBestPath().get(1));
+    //     assertEquals((int) 3, (int) s.getBestPath().get(2));
+    //     assertEquals((int) 6, (int) s.getBestPath().get(3));
+    // }
+
+    // @Test
+    // public void shortestPathsThree() {
+    //     DirectedGraph g = new DirectedGraph();
+    //     LabeledGraph<Integer, Double> l = new LabeledGraph<Integer, Double>(g);
+    //     l.add();
+    //     l.add();
+    //     l.add();
+    //     l.add();
+    //     l.add();
+    //     l.add();
+    //     l.add();
+    //     l.add();
+    //     l.add();
+    //     l.add();
+    //     l.add();
+
+
+    //     l.add(1, 2, 5.0);
+    //     l.add(1, 3, 1.0);
+    //     l.add(2, 4, 6.0);
+    //     l.add(4, 6, 7.0);
+    //     l.add(3, 5, 2.0);
+    //     l.add(5, 7, 3.0);
+    //     l.add(1, 8, 1.0);
+    //     l.add(8, 9, 1.0);
+    //     l.add(9, 10, 1.0);
+    //     l.add(2, 11, 2.0);
+    //     l.add(11, 6, 2.0);
+
+    //     SSPTester s = new SSPTester(l, 1);
+    //     s.setPaths();
+    //     s.pathTo(6);
+
+    //     assertEquals(0, s.getPredecessor(1));
+    //     assertEquals(1, s.getPredecessor(8));
+    //     assertEquals(1, s.getPredecessor(2));
+    //     assertEquals(1, s.getPredecessor(3));
+    //     assertEquals(2, s.getPredecessor(4));
+    //     assertEquals(3, s.getPredecessor(5));
+    //     assertEquals(11, s.getPredecessor(6));
+    //     assertEquals(0, s.getPredecessor(1));
+    //     assertEquals((int) 1, (int) s.getBestPath().get(0));
+    //     assertEquals((int) 2, (int) s.getBestPath().get(1));
+    //     assertEquals((int) 11, (int) s.getBestPath().get(2));
+    //     assertEquals((int) 6, (int) s.getBestPath().get(3));
+    // }
+
+    // @Test
+    // public void shortestPathsTwo() {
+    //     DirectedGraph g = new DirectedGraph();
+    //     LabeledGraph<Integer, Double> l = new LabeledGraph<Integer, Double>(g);
+    //     l.add();
+    //     l.add();
+    //     l.add();
+    //     l.add();
+    //     l.add();
+    //     l.add();
+    //     l.add();
+    //     l.add(1, 2, 5.0);
+    //     l.add(1, 3, 1.0);
+    //     l.add(2, 4, 6.0);
+    //     l.add(4, 6, 7.0);
+    //     l.add(3, 5, 2.0);
+    //     l.add(5, 7, 3.0);
+    //     SSPTester s = new SSPTester(l, 1);
+    //     s.setPaths();
+    //     s.pathTo(6);
+    //     assertEquals(0, s.getPredecessor(1));
+    //     assertEquals(1, s.getPredecessor(2));
+    //     assertEquals(1, s.getPredecessor(3));
+    //     assertEquals(2, s.getPredecessor(4));
+    //     assertEquals(3, s.getPredecessor(5));
+    //     assertEquals(4, s.getPredecessor(6));
+    //     assertEquals(5, s.getPredecessor(7));
+    //     assertEquals((int) 1, (int) s.getBestPath().get(0));
+    //     assertEquals((int) 2, (int) s.getBestPath().get(1));
+    //     assertEquals((int) 4, (int) s.getBestPath().get(2));
+    //     assertEquals((int) 6, (int) s.getBestPath().get(3));
+    // }
+
+
+    @Test
+    public void shortestPathsFour() {
+        DirectedGraph g = new DirectedGraph();
+        LabeledGraph<Integer, Double> l = new LabeledGraph<Integer, Double>(g);
+        l.add();
+        l.add();
+        l.add();
+        l.add();
+        l.add(1, 2, 4.0);
+        l.add(1, 3, 1.0);
+        l.add(3, 2, 2.0);
+        l.add(2, 4, 3.0);
+        l.add(3, 4, 7.0);
+        int source = 1;
+        int dest = 4;
+        SSPTester s = new SSPTester(l, source);
+        s.setPaths();
+        s.pathTo(dest);
+        // System.out.println(s.getWeight(1));
+        // System.out.println(s.getWeight(2));
+        // System.out.println(s.getWeight(3));
+        // System.out.println(s.getWeight(4));
+        assertEquals(1, s.getPredecessor(3));
+        assertEquals(3, s.getPredecessor(2));
+        assertEquals(2, s.getPredecessor(4));
+        List<Integer> finalList = new ArrayList<Integer>();
+        finalList.add(dest);
+        while (s.getPredecessor(dest) != source) {
+            finalList.add(s.getPredecessor(dest));
+            dest = s.getPredecessor(dest);
+        } 
+        finalList.add(source);
+        Collections.reverse(finalList);
+        System.out.println(finalList);
+
+
+
+        
+    }
+
+    // @Test
+    // public void shortestPathsFive() {
+    //     DirectedGraph g = new DirectedGraph();
+    //     LabeledGraph<Integer, Double> l = new LabeledGraph<Integer, Double>(g);
+    //     l.add();
+    //     l.add();
+    //     l.add();
+    //     l.add();
+    //     // l.remove();
+    //     SSPTester s = new SSPTester(l, 1);
+
+    // }
+
+}

@@ -1,0 +1,43 @@
+package graph;
+
+import java.util.ArrayList;
+
+
+// /**
+//  * @author Yuxi Chen
+//  */
+
+ public class FindDFS extends DepthFirstTraversal {
+
+ 	public FindDFS(Graph G) {
+ 		super(G);
+ 		_G = G;
+ 		_testArray = new ArrayList<Integer>();
+ 	}
+
+    protected boolean visit(int v) {
+ 		if (_G.findCurrent(v).size() == 0 && !_G.isDirected()) {
+            for (Integer current : _G.findUndirected(v)) {
+                if (!super.getMarked().contains(current)) {
+                    super._fringeStack.push(current);
+                }
+            } 
+        } else {
+        for (Integer current : _G.findCurrent(v)) {
+            if (!super.getMarked().contains(current)) {
+                super._fringeStack.push(current);
+            }
+        }
+    }
+    _testArray.add(v);
+    return super.visit(v);
+    }
+
+
+
+ 	
+    public ArrayList<Integer> _testArray;
+
+    private Graph _G;
+
+ }

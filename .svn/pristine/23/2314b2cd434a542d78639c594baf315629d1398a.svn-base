@@ -1,0 +1,67 @@
+package graph;
+
+
+import java.util.HashMap;
+
+
+/** import trip.Location; */
+/* See restrictions in Graph.java. */
+
+/** A partial implementation of ShortestPaths that contains the weights of
+ *  the vertices and the predecessor edges.   The client needs to
+ *  supply only the two-argument getWeight method.
+ *  @author Yuxi Chen
+ */
+public class SSPTester extends SimpleShortestPaths {
+
+
+    /** The shortest paths in G from SOURCE. */
+    protected SSPTester(Graph G, int source) {
+        this(G, source, 0);
+    }
+
+    /** A shortest path in G from SOURCE to DEST. */
+    protected SSPTester(Graph G, int source, int dest) {
+        super(G, source, dest);
+        _weights = new HashMap<Integer, Double>();
+        _G = G;
+    }
+
+    @Override
+    public double getWeight(int v) {
+        System.out.println("Do I get here");
+        LabeledGraph h = ((LabeledGraph) _G);
+        System.out.println("The weight for " + v + " is gonna be: " + h.getLabel(v));
+
+        return ((double) h.getLabel(v));
+    }
+
+    @Override
+    protected double getWeight(int u, int v) {
+        LabeledGraph h = ((LabeledGraph) _G);
+        return ((double) h.getLabel(u, v));
+    }
+
+    protected void setWeight(int v, double w) {
+        LabeledGraph h = ((LabeledGraph) _G);
+        h.setLabel(v, w);
+    }
+
+    public int getPredecessor(int v) {
+        if (!getCurrPredecessor().keySet().contains(v)) {
+            return 0;
+        }
+        return getCurrPredecessor().get(v);
+    }
+
+    protected void setPredecessor(int v, int u) {
+        getCurrPredecessor().put(v, u);
+    }
+
+    /** This holds the information about my weights. */
+    private HashMap<Integer, Double> _weights;
+
+    /** This holds a copy of the current graph I'm working with. */
+    private Graph _G;
+
+}

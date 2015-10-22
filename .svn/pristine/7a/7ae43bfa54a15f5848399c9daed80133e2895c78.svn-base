@@ -1,0 +1,65 @@
+package graph;
+
+import java.util.ArrayList;
+
+
+ /**
+  * @author Yuxi Chen
+  */
+
+public class FindDFS extends DepthFirstTraversal {
+
+    /** This is a constructor.
+        @param G We need to pass in a graph here.
+        */
+    public FindDFS(Graph G) {
+        super(G);
+        _G = G;
+        _testArray = new ArrayList<Integer>();
+    }
+
+    /** This is a getter method for finding our array.
+        @return
+        */
+    protected ArrayList<Integer> getArray() {
+        return _testArray;
+    }
+
+    protected boolean shouldPostVisit(int v) {
+        if (isDFS()) {
+            super.postVisit(v);
+            return true;
+        }
+        return false;
+    }
+
+    /** This visit overrides the other visit and what it does is
+    it stores vertices into our testArray.
+        @return
+        @param v This is the vertex I'm visiting.
+        */
+    protected boolean visit(int v) {
+        if (_G.findCurrent(v).size() == 0 && !_G.isDirected()) {
+            for (Integer current : _G.findUndirected(v)) {
+                if (!super.getMarked().contains(current)) {
+                    super._fringeStack.push(current);
+                }
+            }
+        } else {
+            for (Integer current : _G.findCurrent(v)) {
+                if (!super.getMarked().contains(current)) {
+                    super._fringeStack.push(current);
+                }
+            }
+        }
+        _testArray.add(v);
+        return super.visit(v);
+    }
+
+    /** This holds my array. */
+    private ArrayList<Integer> _testArray;
+
+    /** This holds a copy of the graph I'm using. */
+    private Graph _G;
+
+}

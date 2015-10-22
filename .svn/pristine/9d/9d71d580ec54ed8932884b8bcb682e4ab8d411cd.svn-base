@@ -1,0 +1,290 @@
+package graph;
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+import static java.util.Arrays.asList;
+
+import java.util.Iterator;
+import java.util.Arrays;
+import java.util.ArrayList;
+
+
+/** Unit tests for the Traversal class.
+ *  @author Yuxi Chen
+ */
+public class TraversalTesting {
+
+
+	private class FindDFS extends DepthFirstTraversal {
+
+		public FindDFS(Graph G) {
+        	super(G);
+        	_G = G;
+        	_testArrayDFS = new ArrayList<Integer>();
+    	}
+
+    	protected ArrayList<Integer> getArray() {
+    		return _testArrayDFS;
+    	}
+
+    	protected boolean visit(int v) {
+            _testArrayDFS.add(v);
+    	   return super.visit(v);
+    	}	
+	}
+
+
+	private class FindBFS extends BreadthFirstTraversal{
+		public FindBFS(Graph G) {
+ 			super(G);
+ 			_G = G;
+ 			_testArrayBFS = new ArrayList<Integer>();
+ 		}
+
+    	protected ArrayList<Integer> getArray() {
+        	return _testArrayBFS;
+    	}
+
+    	protected boolean visit(int v) {
+            _testArrayBFS.add(v);
+    	   return super.visit(v);
+    	}
+	}
+
+    // @Test
+    // public void DepthFirstTraversalUndirected() {
+    //     UndirectedGraph g = new UndirectedGraph();
+    //     g.add();
+    //     g.add();
+    //     g.add();
+    //     g.add();
+    //     g.add();
+    //     g.add();
+    //     g.add(1, 2);
+    //     g.add(1, 4);
+    //     g.add(2, 3);
+    //     g.add(2, 5);
+    //     g.add(3, 4);
+    //     g.add(3, 6);
+    //     g.add(5, 6);
+    //     DepthFirstTraversal dfs = new DepthFirstTraversal(g);
+    // }
+
+    // @Test
+    // public void BreadthFirstTraversalUndirected() {
+    //     UndirectedGraph g = new UndirectedGraph();
+    //     g.add();
+    //     g.add();
+    //     g.add();
+    //     g.add();
+    //     g.add();
+    //     g.add();
+    //     g.add(1, 2);
+    //     g.add(1, 4);
+    //     g.add(2, 3);
+    //     g.add(2, 5);
+    //     g.add(3, 4);
+    //     g.add(3, 6);
+    //     g.add(5, 6);
+    //     BreadthFirstTraversal bfs = new BreadthFirstTraversal(g);
+    //     // System.out.println("IS ANYTHING GOIG ON");
+    // }
+
+    // @Test
+    // public void DepthFirstTraversalDirected() {
+    //     DirectedGraph g = new DirectedGraph();
+    //     g.add();
+    //     g.add();
+    //     g.add();
+    //     g.add();
+    //     g.add();
+    //     g.add();
+    //     g.add(1, 2);
+    //     g.add(1, 4);
+    //     g.add(2, 3);
+    //     g.add(2, 5);
+    //     g.add(3, 4);
+    //     g.add(3, 6);
+    //     g.add(5, 6);
+    //     DepthFirstTraversal dfs = new DepthFirstTraversal(g);
+    // }
+
+    // @Test
+    // public void BreadthFirstTraversalDirected() {
+    //     DirectedGraph g = new DirectedGraph();
+    //     g.add();
+    //     g.add();
+    //     g.add();
+    //     g.add();
+    //     g.add();
+    //     g.add();
+    //     g.add(1, 2);
+    //     g.add(2, 3);
+    //     g.add(2, 5);
+    //     g.add(3, 4);
+    //     g.add(3, 6);
+    //     g.add(5, 6);
+    //     BreadthFirstTraversal bfs = new BreadthFirstTraversal(g);
+    // }
+
+    // @Test
+    // public void extraCreditTestDFS() {
+    // 	DirectedGraph g = new DirectedGraph();
+    // 	g.add();
+    // 	g.add();
+    // 	g.add();
+    // 	g.add();
+    // 	g.add();
+    // 	g.add(5, 4);
+    // 	g.add(5, 3);
+    // 	g.add(4, 1);
+    // 	g.add(3, 2);
+    // 	g.add(1, 5);
+    // 	DepthFirstTraversal dfs = new DepthFirstTraversal(g);
+    // 	dfs.traverse(5);
+    // 	assertEquals(5, (int) dfs.getTestArray().get(0));
+    // 	assertEquals(3, (int) dfs.getTestArray().get(1));
+    // 	assertEquals(2, (int) dfs.getTestArray().get(2));
+    // 	assertEquals(4, (int) dfs.getTestArray().get(3));
+    // 	assertEquals(1, (int) dfs.getTestArray().get(4));
+    // }
+
+    // @Test
+    // public void extraCreditTestBFS() {
+    // 	DirectedGraph g = new DirectedGraph();
+    // 	g.add();
+    // 	g.add();
+    // 	g.add();
+    // 	g.add();
+    // 	g.add();
+    // 	g.add(5, 4);
+    // 	g.add(5, 3);
+    // 	g.add(4, 1);
+    // 	g.add(3, 2);
+    // 	g.add(1, 5);
+    // 	BreadthFirstTraversal bfs = new BreadthFirstTraversal(g);
+    // 	bfs.traverse(5);
+    // 	assertEquals(5, (int) bfs.getTestArray().get(0));
+    // 	assertEquals(4, (int) bfs.getTestArray().get(1));
+    // 	assertEquals(3, (int) bfs.getTestArray().get(2));
+    // 	assertEquals(1, (int) bfs.getTestArray().get(3));
+    // 	assertEquals(2, (int) bfs.getTestArray().get(4));
+    // }
+
+    @Test
+    public void extraCreditTestBFS() {
+    	DirectedGraph g = new DirectedGraph();
+    	g.add();
+    	g.add();
+    	g.add();
+    	g.add();
+    	g.add();
+    	g.add(5, 4);
+    	g.add(5, 3);
+    	g.add(4, 1);
+    	g.add(3, 2);
+    	g.add(1, 5);
+    	FindBFS bfs = new FindBFS(g);
+    	bfs.traverse(5);
+
+
+    	
+        ArrayList<Integer> correctOne = new ArrayList<Integer>();
+        correctOne.add(5);
+        correctOne.add(3);
+        correctOne.add(2);
+        correctOne.add(4);
+        correctOne.add(1);
+        
+        ArrayList<Integer> correctTwo = new ArrayList<Integer>();
+        correctTwo.add(5);
+        correctTwo.add(4);
+        correctTwo.add(1);
+        correctTwo.add(3);
+        correctTwo.add(2);
+
+
+
+        if (correctOne.equals(bfs.getArray())) {
+            assertEquals(5, (int) bfs.getArray().get(0));
+            assertEquals(3, (int) bfs.getArray().get(1));
+            assertEquals(2, (int) bfs.getArray().get(2));
+            assertEquals(4, (int) bfs.getArray().get(3));
+            assertEquals(1, (int) bfs.getArray().get(4));
+
+        } else if (correctTwo.equals(bfs.getArray())) {
+            assertEquals(5, (int) bfs.getArray().get(0));
+            assertEquals(4, (int) bfs.getArray().get(1));
+            assertEquals(1, (int) bfs.getArray().get(2));
+            assertEquals(3, (int) bfs.getArray().get(3));
+            assertEquals(2, (int) bfs.getArray().get(4));
+        } else {
+            throw new AssertionError("Uh Oh");
+        }
+    }
+
+    @Test
+    public void extraCreditTestDFS() {
+    	DirectedGraph g = new DirectedGraph();
+    	g.add();
+    	g.add();
+    	g.add();
+    	g.add();
+    	g.add();
+    	g.add(5, 4);
+    	g.add(5, 3);
+    	g.add(4, 1);
+    	g.add(3, 2);
+    	g.add(1, 5);
+    	FindDFS dfs = new FindDFS(g);
+    	dfs.traverse(5);
+
+        ArrayList<Integer> correctOne = new ArrayList<Integer>();
+        correctOne.add(5);
+        correctOne.add(4);
+        correctOne.add(3);
+        correctOne.add(1);
+        correctOne.add(2);
+        ArrayList<Integer> correctTwo = new ArrayList<Integer>();
+        correctTwo.add(5);
+        correctTwo.add(3);
+        correctTwo.add(4);
+        correctTwo.add(2);
+        correctTwo.add(1);
+        ArrayList<Integer> correctThree = new ArrayList<Integer>();
+        correctThree.add(5);
+        correctThree.add(4);
+        correctThree.add(3);
+        correctThree.add(2);
+        correctThree.add(1);
+        ArrayList<Integer> correctFour = new ArrayList<Integer>();
+        correctFour.add(5);
+        correctFour.add(3);
+        correctFour.add(4);
+        correctFour.add(1);
+        correctFour.add(2);
+
+
+        if (correctOne.equals(dfs.getArray())) {
+            System.out.println("This is good. ONE");
+            // throw new AssertionError("Uh Oh");
+        } else if (correctTwo.equals(dfs.getArray())) {
+            System.out.println("This is good. TWO");
+        } else if (correctThree.equals(dfs.getArray())) {
+            System.out.println("This is good. THREE");
+        } else if (correctFour.equals(dfs.getArray())) {
+            System.out.println("This is good. FOUR");
+        } else {
+            throw new AssertionError("Uh Oh");
+        }
+    }
+
+    /** This holds the array for our DFS. */
+    private ArrayList<Integer> _testArrayDFS;
+
+    /** This holds the array for our BFS. */
+    private ArrayList<Integer> _testArrayBFS;
+
+    /** This holds a copy of the graph that we're working with. */
+    private Graph _G;
+}

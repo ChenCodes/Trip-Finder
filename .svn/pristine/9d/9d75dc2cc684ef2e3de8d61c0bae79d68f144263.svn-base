@@ -1,0 +1,274 @@
+package graph;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.lang.IllegalArgumentException;
+
+/* See restrictions in Graph.java. */
+
+/** A partial implementation of Graph containing elements common to
+ *  directed and undirected graphs.
+ *
+ *  @author Yuxi Chen
+ */
+abstract class GraphObj extends Graph {
+
+    /** A new, empty Graph. */
+    GraphObj() {
+        currentMap = new HashMap<Integer, ArrayList<Integer>>();
+        directedMap = new HashMap<Integer, ArrayList<Integer>>();
+        vertex = 0;
+        removedVertices = new ArrayList<Integer>();
+        addedVertices = new ArrayList<Integer>();
+        edgeIds = new ArrayList<Integer>();
+        addedEdge = new ArrayList<int[]>();
+    }
+
+    /** This helper function takes what we have in this class and brings it to directed 
+    graph. */
+    public ArrayList<Integer> findPred(int u) {
+        return directedMap.get(u);
+    }
+
+    /** This helper function takes what we have in this class and brings it to undirected
+    graph. */
+    public ArrayList<Integer> findUndirected(int u) {
+        return currentMap.get(u);
+    }
+
+    @Override
+    public int vertexSize() {
+        int size = currentMap.size();
+        return size;
+    }
+
+    @Override
+    public int maxVertex() {
+        int maxVertex = addedVertices.size();
+        return maxVertex;
+    }
+
+    @Override
+    public int edgeSize() {
+        int counter = 0;
+        for (ArrayList<Integer> value : currentMap.values()) {
+            counter += value.size();
+        }
+        return counter;
+    }
+
+    @Override
+    public abstract boolean isDirected();
+
+    /** Given a key, we will go and look for the arraylist corresponding to it and determine
+    how many neighboring vertices it has. */
+    @Override
+    public int outDegree(int v) {
+        int outEdges = currentMap.get(v).size();
+        return outEdges;
+    }
+
+    @Override
+    public abstract int inDegree(int v);
+
+    @Override
+    public boolean contains(int u) {
+        if (currentMap.containsKey(u)) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean contains(int u, int v) {
+        if (isDirected()) {
+            if (currentMap.get(u).contains(v)) {
+                return true;
+            } else if (directedMap.get(u).contains(v)) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            if (currentMap.get(u).contains(v)) {
+                return true;
+            } 
+        }
+        return false;
+    }
+
+    @Override
+    /** They require us to have the smallest integer >= 1 that is not already a valid vertex. 
+    Basically what I'm doing here is seeing if we have any vertices that we already removed. If we do
+    then we want to */
+    public int add() {
+        if (removedVertices.size() == 0) {
+            vertex += 1;
+            currentMap.put(vertex, new ArrayList<Integer>());
+            directedMap.put(vertex, new ArrayList<Integer>());
+            addedVertices.add(vertex);
+            return vertex;
+        } else {
+            int firstRemoved = smallest();
+            int counter = 0;
+            for (int element : removedVertices) {
+                if (element == firstRemoved) {
+                    break;
+                }
+                counter += 1;
+            }
+            currentMap.put(firstRemoved, new ArrayList<Integer>());
+            directedMap.put(firstRemoved, new ArrayList<Integer>());
+            removedVertices.remove(counter);
+            addedVertices.add(firstRemoved);
+            return firstRemoved;
+        }
+    }
+
+    /** This is a helper function to obtain the smallest value inside of an arraylist. */
+    public int smallest() {
+        int minValue = 1000;
+        for (int current : removedVertices) {
+            if (current <= minValue) {
+                minValue = current;
+            }
+        }
+        return minValue;
+    }
+
+
+    @Override
+    /** Here we're trying to add an edge between two vertexes. 
+    If graph is not undirected, that means we will have 1 -> 2 as well as 2 --> 1. */
+    public int add(int u, int v) {
+        if (!addedVertices.contains(u) || !addedVertices.contains(v)) {
+      
+        } else {
+            int[] w = {u, v};
+            addedEdge.add(w);
+            if (isDirected()) {
+                if (!currentMap.get(u).contains(v)) {
+                    currentMap.get(u).add(v);    
+                } if (!directedMap.get(v).contains(u)) {
+                    directedMap.get(v).add(u);    
+                }
+            } else {
+                if (!currentMap.get(u).contains(v)) {
+                    currentMap.get(u).add(v);
+                } if (!currentMap.get(v).contains(u)) {
+                    currentMap.get(v).add(u);
+                } else {
+                    return u;
+                }
+            }
+        }
+        return u;
+    }
+
+    @Override
+    public void remove(int v) {
+        currentMap.remove(v);
+        directedMap.remove(v);
+        int counter = 0;
+        for (int i : addedVertices) {
+            if (i == v) {
+                addedVertices.remove(counter);
+                removedVertices.add(v);    
+                break;
+            }
+            counter += 1;
+        }
+    }
+
+    @Override
+    public void remove(int u, int v) {
+        int counter = 0;
+        for (int element : currentMap.get(u)) {
+            if (element == v) {
+                currentMap.get(u).remove(counter);
+            }
+            counter += 1;
+        }
+    }
+
+    @Override
+    public Iteration<Integer> vertices() {
+        Iterator<Integer> vertexIterate = addedVertices.iterator();
+        Iteration<Integer> newVertexIterate = Iteration.iteration(vertexIterate);
+        return newVertexIterate;
+    }
+
+    @Override
+    public int successor(int v, int k) {
+        int currSuccessor = currentMap.get(v).get(k);
+        return currSuccessor;
+    }
+
+    @Override
+    public abstract int predecessor(int v, int k);
+
+    @Override
+    public Iteration<Integer> successors(int v) {
+        Iterator<Integer> successorIterate = currentMap.get(v).iterator();
+        Iteration<Integer> newSuccessorIterate = Iteration.iteration(successorIterate);
+        return newSuccessorIterate;
+    }
+
+    @Override
+    public abstract Iteration<Integer> predecessors(int v);
+
+    @Override
+    public Iteration<int[]> edges() {
+        Iterator<int[]> edgesIterate = addedEdge.iterator();
+        Iteration<int[]> newEdgesIterate = Iteration.iteration(edgesIterate);
+        return newEdgesIterate;
+    }
+
+    @Override
+    protected boolean mine(int v) {
+        if (!addedVertices.contains(v)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    protected void checkMyVertex(int v) {
+        if (!addedVertices.contains(v)) {
+            throw new IllegalArgumentException("This vertex doesn't exist");
+        } else {
+        }
+    }
+
+    @Override
+    protected int edgeId(int u, int v) {
+        int idNumber = (u + v) * (u + v);
+        edgeIds.add(idNumber);
+        return idNumber;
+    }
+
+    /** This holds our graph data structure by having a key which is a vertex and values
+    that are other vertices that it is adjacent to. This helps us find outdegrees. */
+    private HashMap<Integer, ArrayList<Integer>> currentMap;
+
+    /** This holds our graph data structure by having a key which is a vertex and values
+    that are other vertices that it is adjacent to. The difference between this variable and the above 
+    variable is that this one helps find indegrees. */
+    private HashMap<Integer, ArrayList<Integer>> directedMap;
+
+    /** This keeps track of which number vertex that we're currently on. */
+    private int vertex;
+
+    /** This keeps track of which vertices that we have removed. */ 
+    private ArrayList<Integer> removedVertices;
+
+    /** This keeps track of the vertices that I have added. */
+    private ArrayList<Integer> addedVertices;
+
+    /** Keeps track of the edgeId of all of my possible edges. */
+    private ArrayList<Integer> edgeIds;
+
+    /** Keeps track of all the edges that we have added previously. */
+    private ArrayList<int[]> addedEdge;
+}
+

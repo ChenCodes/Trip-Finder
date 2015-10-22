@@ -1,0 +1,79 @@
+package graph;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+/* See restrictions in Graph.java. */
+
+/** Represents a general unlabeled directed graph whose vertices are denoted by
+ *  positive integers. Graphs may have self edges.
+ *
+ *  @author Yuxi Chen
+ */
+public class DirectedGraph extends GraphObj {
+
+    @Override
+    public boolean isDirected() {
+        return true;
+    }
+
+    @Override
+    protected ArrayList<Integer> findCurrent(int u) {
+        ArrayList<Integer> current = super.findCurrent(u);
+        return current;
+    }
+
+    @Override
+    protected ArrayList<Integer> findPred(int u) {
+        ArrayList<Integer> current = super.findPred(u);
+        return current;
+    }
+    @Override
+    protected ArrayList<Integer> findUndirected(int u) {
+        ArrayList<Integer> current = super.findUndirected(u);
+        return current;
+    }
+    @Override
+    public int inDegree(int v) {
+        if (!this.addedVertices().contains(v)) {
+            return 0;
+        }
+        inDegreePred = this.findPred(v);
+        int arrivingVertices = inDegreePred.size();
+        return arrivingVertices;
+    }
+
+    @Override
+    public int predecessor(int v, int k) {
+        if (!this.addedVertices().contains(v)) {
+            return 0;
+        } else {
+            pred = this.findPred(v);
+            if (k < pred.size()) {
+                int currPred = pred.get(k);
+                return currPred;
+            } else {
+                return 0;
+            }
+        }
+    }
+
+    @Override
+    public Iteration<Integer> predecessors(int v) {
+        if (this.findPred(v) == null || this.findPred(v).size() == 0) {
+            List<Integer> current = new ArrayList<Integer>();
+            return Iteration.iteration(current);
+        }
+        Iterator<Integer> predecessorsArray = this.findPred(v).iterator();
+        Iteration<Integer> predArray = Iteration.iteration(predecessorsArray);
+        return predArray;
+    }
+
+    /** This holds an arraylist of a given vertices' values. */
+    private ArrayList<Integer> inDegreePred;
+
+    /** This also holds an arraylist of a given vertices' values. */
+    private ArrayList<Integer> pred;
+
+}

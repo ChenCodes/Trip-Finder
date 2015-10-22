@@ -1,0 +1,75 @@
+package graph;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+/* See restrictions in Graph.java. */
+
+/** Represents an undirected graph.  Out edges and in edges are not
+ *  distinguished.  Likewise for successors and predecessors.
+ *
+ *  @author Yuxi Chen
+ */
+public class UndirectedGraph extends GraphObj {
+
+    @Override
+    public boolean isDirected() {
+        return false;
+    }
+
+    @Override
+    protected ArrayList<Integer> findCurrent(int u) {
+        ArrayList<Integer> current = super.findCurrent(u);
+        return current;
+    }
+    @Override
+    protected ArrayList<Integer> findPred(int u) {
+        ArrayList<Integer> current = super.findPred(u);
+        return current;
+    }
+    @Override
+    protected ArrayList<Integer> findUndirected(int u) {
+        ArrayList<Integer> current = super.findUndirected(u);
+        return current;
+    }
+    @Override
+    public int inDegree(int v) {
+        if (!this.addedVertices().contains(v)) {
+            return 0;
+        }
+        ArrayList<Integer> pred = this.findUndirected(v);
+        int arrivingVertices = pred.size();
+        return arrivingVertices;
+    }
+
+    /** Since the predecessor is simply all the nodes that are connected to it,
+    we can just find whichever one we want.
+    @return
+    @param v This holds my integer of choice.
+    @param k This holds the index of the predecessor.
+    */
+    @Override
+    public int predecessor(int v, int k) {
+        if (!this.addedVertices().contains(v)) {
+            return 0;
+        } else {
+            ArrayList<Integer> pred = this.findUndirected(v);
+            if (pred.size() <= k) {
+                return 0;
+            }
+            int returnValue = pred.get(k);
+            return returnValue;
+        }
+    }
+
+    @Override
+    public Iteration<Integer> predecessors(int v) {
+        if (this.findUndirected(v) == null || this.findUndirected(v).size() == 0) {
+            List<Integer> current = new ArrayList<Integer>();
+            return Iteration.iteration(current);
+        }
+        Iterator<Integer> pred = this.findUndirected(v).iterator();
+        Iteration<Integer> predIterate = Iteration.iteration(pred);
+        return predIterate;
+    }
+}

@@ -1,0 +1,59 @@
+package graph;
+
+import java.util.LinkedList;
+import java.util.Collection;
+import java.util.ArrayList;
+
+/* See restrictions in Graph.java. */
+
+/** Implements a depth-first traversal of a graph.  Generally, the
+ *  client will extend this class, overriding the visit and
+ *  postVisit methods, as desired (by default, they do nothing).
+ *  @author Yuxi Chen
+ */
+public class DepthFirstTraversal extends Traversal {
+
+    /** A depth-first Traversal of G, using FRINGE as the fringe. */
+    protected DepthFirstTraversal(Graph G) {
+        super(G, new LinkedList<Integer>());
+        _G = G;
+        _marked = new ArrayList<Integer>();
+    }
+
+    @Override
+    protected boolean isDFS() {
+        return true;
+    }
+
+
+    /** This function visits the vertex v.
+        @return
+        @param v This is our vertex.
+        */
+    @Override
+    protected boolean visit(int v) {
+        return super.visit(v);
+    }
+
+    /** This marked function is a getter method for our _marked.
+        @return
+        */
+    protected ArrayList<Integer> marked() {
+        return _marked;
+    }
+
+    @Override
+    protected boolean postVisit(int v) {
+        return super.postVisit(v);
+    }
+
+    /** This holds the items that I will be traversing over. */
+    private Collection<Integer> fringeItems;
+
+    /** This holds my graph object. */
+    private Graph _G;
+
+    /** This holds the arraylist of all of my marked vertices. */
+    private ArrayList<Integer> _marked;
+
+}

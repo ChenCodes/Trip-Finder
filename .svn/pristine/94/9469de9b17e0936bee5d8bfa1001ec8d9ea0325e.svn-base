@@ -1,0 +1,232 @@
+package graph;
+
+/* See restrictions in Graph.java. */
+
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Comparator;
+import java.util.Collections;
+
+
+/** The shortest paths through an edge-weighted graph.
+ *  By overrriding methods getWeight, setWeight, getPredecessor, and
+ *  setPredecessor, the client can determine how to represent the weighting
+ *  and the search results.  By overriding estimatedDistance, clients
+ *  can search for paths to specific destinations using A* search.
+ *  @author Yuxi Chen
+ */
+public abstract class ShortestPaths {
+
+    /** The shortest paths in G from SOURCE. */
+    public ShortestPaths(Graph G, int source) {
+        this(G, source, 0);
+    }
+
+    /** A shortest path in G from SOURCE to DEST. */
+    public ShortestPaths(Graph G, int source, int dest) {
+        _G = G;
+        _source = source;
+        _dest = dest;
+        _pQueue = new PriorityQueue<Integer>();
+        _weightKey = new HashMap<Integer, Double>();
+        _currPredecessor = new HashMap<Integer, Integer>();
+        _heuristic = new HashMap<Integer, Double>();
+        bestPath = new ArrayList<Integer>();
+    }
+
+    /** Initialize the shortest paths.  Must be called before using
+     *  getWeight, getPredecessor, and pathTo. */
+    public void setPaths() {
+        System.out.println("oogabooga");
+        bestWeight = new HashMap<Integer, Double>();
+        bestPredecessor = new HashMap<Integer, Integer>();
+
+
+        for (Integer current : _G.vertices()) {
+            if (current == getSource()) {
+                setWeight(current, 0.0);
+                bestWeight.put(current, 0.0);
+                setPredecessor(current, -1);
+                bestPredecessor.put(current, -1);
+            } else {
+                setWeight(current, Double.POSITIVE_INFINITY);
+                bestWeight.put(current, Double.POSITIVE_INFINITY);
+                setPredecessor(current, -1);
+                bestPredecessor.put(current, -1);
+            }
+        }
+
+        Compared comparison = new Compared();
+        PriorityQueue<Integer> pQ = new
+            PriorityQueue<Integer>(_G.vertexSize(), comparison);
+        HashMap<Integer, Integer> path = new HashMap<Integer, Integer>();
+        pQ.add(getSource());
+
+        
+        Integer a = 0;
+        while (!pQ.isEmpty()) {
+            a = pQ.poll();
+            if (a == _dest) {
+                System.out.println("I break since my destination has been popped");
+                break;
+            }
+            System.out.println("At the front of while loop, a is: " + a);
+            for (Integer current : _G.findCurrent(a)) {
+                System.out.println(bestWeight.get(current) + "My current is: " + current);
+
+                System.out.println("Hello" + bestWeight.get(current));
+
+                System.out.println(((LabeledGraph) _G).getLabel(a, current));
+                System.out.println(bestWeight.get(a) + "best weight for a: " + a);
+                if (bestWeight.get(current) > ((Double) ((LabeledGraph) _G).getLabel(a, current)) + bestWeight.get(a) + estimatedDistance(current)) {
+                    bestWeight.put(current, ((Double) ((LabeledGraph) _G).getLabel(a, current)) + bestWeight.get(a) + estimatedDistance(current));
+                    setWeight(current, ((Double) ((LabeledGraph) _G).getLabel(a, current)) + bestWeight.get(a) + estimatedDistance(current));
+                    
+                    System.out.println("The new weight is now: " + (((Double) ((LabeledGraph) _G).getLabel(a, current)) + bestWeight.get(a)));
+                    bestPredecessor.put(current, a);
+                    System.out.println("My current is: " + current + " and my pred: " + a);
+                    setPredecessor(current, a);
+                }
+                pQ.add(current);
+            }
+        }
+    }
+
+    /** Returns the starting vertex. */
+    public int getSource() {
+        return _source;
+    }
+
+
+    /** Returns the target vertex, or 0 if there is none. */
+    public int getDest() {
+        return _dest;
+    }
+
+    /** Returns the current weight of vertex V in the graph.  If V is
+     *  not in the graph, returns positive infinity. */
+    public abstract double getWeight(int v);
+
+    /** Set getWeight(V) to W. Assumes V is in the graph. */
+    protected abstract void setWeight(int v, double w);
+
+    /** Returns the current predecessor vertex of vertex V in the graph, or 0 if
+     *  V is not in the graph or has no predecessor. */
+    public abstract int getPredecessor(int v);
+
+    /** Set getPredecessor(V) to U. */
+    protected abstract void setPredecessor(int v, int u);
+
+    /** Returns an estimated heuristic weight of the shortest path from vertex
+     *  V to the destination vertex (if any).  This is assumed to be less
+     *  than the actual weight, and is 0 by default. */
+    protected double estimatedDistance(int v) {
+        return 0.0;
+    }
+
+    /** Returns the current weight of edge (U, V) in the graph.  If (U, V) is
+     *  not in the graph, returns positive infinity. */
+    protected abstract double getWeight(int u, int v);
+
+    /** Returns a list of vertices starting at _source and ending
+     *  at V that represents a shortest path to V.  Invalid if there is a
+     *  destination vertex other than V. */
+
+    private class Compared implements Comparator<Integer> {
+        /** This is an overriding of the original compare method
+        in the comparator interface.
+            @return
+            @param u This is a first vertex.
+            @param v This is the second vertex.
+            */
+        public int compare(Integer u, Integer v) {
+            if (bestWeight.get(u) == bestWeight.get(v)) {
+                return 0;
+            } else if (bestWeight.get(u) > bestWeight.get(v)) {
+                return 10;
+            } else {
+                return -10;
+            }
+        }
+    }
+
+    /** This finds us the best possible path.
+        @return
+        @param v This is the vertex of interest.
+        */
+    public List<Integer> pathTo(int v) {
+        System.out.println("I get here yee yee");
+        bestPath = new ArrayList<Integer>();
+        bestPath.add(v);
+        while (bestPredecessor.get(v) != getSource()) {
+            bestPath.add(bestPredecessor.get(v));
+            v = bestPredecessor.get(v);
+            // if (bestPath.get(v) == getSource()) {
+            //     bestPath.add(getSource());
+            //     break;
+            // }
+        }
+        bestPath.add(getSource());
+        Collections.reverse(bestPath);
+        return bestPath;
+
+    }
+
+    /** Returns a list of vertices starting at the source and ending at the
+     *  destination vertex. Invalid if the destination is not specified. */
+    public List<Integer> pathTo() {
+        return pathTo(getDest());
+    }
+
+    /** This gets us back our bestPath.
+        @return
+        */
+    List<Integer> getBestPath() {
+        return bestPath;
+    }
+
+    /** This is a getter method for obtaining currPredecessor.
+        @return
+         */
+    HashMap<Integer, Integer> getCurrPredecessor() {
+        return _currPredecessor;
+    }
+
+    /** This is a getter method for the weightKey.
+        @return
+        */
+    HashMap<Integer, Double> getWeightKey() {
+        return _weightKey;
+    }
+
+    /** The graph being searched. */
+    protected final Graph _G;
+    /** The starting vertex. */
+    private final int _source;
+    /** The target vertex. */
+    private final int _dest;
+
+    /** This is a priority queue that aids us in figuring out
+    which item to remove first. */
+    private PriorityQueue<Integer> _pQueue;
+
+    /** This is a mapping of a vertex to its weight. */
+    private HashMap<Integer, Double> _weightKey;
+
+    /** This is another mapping to a previous predecessor. */
+    HashMap<Integer, Integer> _currPredecessor;
+
+    /** This is a mapping of a vertex to its own heuristic. */
+    private HashMap<Integer, Double> _heuristic;
+
+    /** This is what is returned as the best possible path. */
+    List<Integer> bestPath;
+
+    /** This holds the mapping of my vertex to its node weight. */
+    HashMap<Integer, Double> bestWeight;
+
+    /** This holds a mapping of my predecessor to a current vertex. */
+    HashMap<Integer, Integer> bestPredecessor;
+}

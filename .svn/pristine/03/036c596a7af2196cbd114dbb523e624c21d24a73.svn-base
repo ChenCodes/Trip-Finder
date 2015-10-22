@@ -1,0 +1,59 @@
+package graph;
+
+import java.util.ArrayList;
+
+
+
+
+/** This class extends BFS. 
+	@author Yuxi Chen*/
+public class FindBFS extends BreadthFirstTraversal {
+
+    /** This is a constructor.
+        @param G This is my graph.
+        */
+    public FindBFS(Graph G) {
+        super(G);
+        _G = G;
+        _testArray = new ArrayList<Integer>();
+    }
+
+    /** This is a getter method for getting the array.
+        @return
+        */
+    protected ArrayList<Integer> getArray() {
+        return _testArray;
+    }
+
+    /** This is a method to help us visit a vertex.
+        @return
+        @param v This is the vertex.
+        */
+
+    protected boolean visit(int v) {
+        if (_G.findCurrent(v).size() == 0 && !_G.isDirected()) {
+            for (Integer current : _G.findUndirected(v)) {
+                if (!super.getMarked().contains(current)) {
+                    super._fringeStack.push(current);
+                }
+            }
+        } else {
+            for (Integer current : _G.findCurrent(v)) {
+                if (!super.getMarked().contains(current)) {
+                    super._fringeStack.push(current);
+                }
+            }
+        }
+        _testArray.add(v);
+        return super.visit(v);
+    }
+
+
+
+    /** This arraylist holds our test array. */
+    private ArrayList<Integer> _testArray;
+
+    /** This holds a copy of our graph G. */
+    private Graph _G;
+
+}

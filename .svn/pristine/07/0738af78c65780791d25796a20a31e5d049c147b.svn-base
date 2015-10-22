@@ -1,0 +1,68 @@
+package graph;
+
+import java.util.HashMap;
+import java.util.ArrayList;
+/** import trip.Location; */
+
+/* See restrictions in Graph.java. */
+
+/** A partial implementation of ShortestPaths that contains the weights of
+ *  the vertices and the predecessor edges.   The client needs to
+ *  supply only the two-argument getWeight method.
+ *  @author Yuxi Chen
+ */
+public abstract class SimpleShortestPaths extends ShortestPaths {
+
+    /** The shortest paths in G from SOURCE. */
+    public SimpleShortestPaths(Graph G, int source) {
+        this(G, source, 0);
+    }
+
+    /** A shortest path in G from SOURCE to DEST. */
+    public SimpleShortestPaths(Graph G, int source, int dest) {
+        super(G, source, dest);
+        _weights = new HashMap<Integer, ArrayList<Double>>();
+
+    }
+
+    /** This gets us the weight of a node v.
+        @return
+        @param v This is the node.
+        */
+    @Override
+    public double getWeight(int v) {
+        LabeledGraph h = ((LabeledGraph) _G);
+        System.out.println("Do I get here??" + " Our current V is: " + v + " and weight is: " + h.getLabel(v));
+        if (!_G.contains(v)) {
+            System.out.println("Obviously we don't have this vertex: " + v);
+            throw new AssertionError("vertex does not exist.");
+        }
+        return ((double) h.getLabel(v));
+    }
+
+    @Override
+    protected abstract double getWeight(int u, int v);
+
+    @Override
+    /** This allows us to add labels to the graph. */
+    protected void setWeight(int v, double w) {
+        getWeightKey().put(v, w);
+    }
+
+    @Override
+    public int getPredecessor(int v) {
+        if (!_currPredecessor.keySet().contains(v)) {
+            throw new AssertionError("vertex does not exist.");
+        }
+        return _currPredecessor.get(v);
+    }
+
+    @Override
+    protected void setPredecessor(int v, int u) {
+        _currPredecessor.put(u, v);
+    }
+
+    /** This holds my weights for a given vertex. */
+    private HashMap<Integer, ArrayList<Double>> _weights;
+
+}

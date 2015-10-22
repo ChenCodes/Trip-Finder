@@ -1,0 +1,292 @@
+package graph;
+
+/* See restrictions in Graph.java. */
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Queue;
+import java.util.HashSet;
+import java.util.Stack;
+import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.Collections;
+
+/** Implements a generalized traversal of a graph.  At any given time,
+ *  there is a particular collection of untraversed vertices---the "fringe."
+ *  Traversal consists of repeatedly removing an untraversed vertex
+ *  successors to the fringe.
+ *   *  from the fringe, visting it, and then adding its untraversed
+
+ *  Generally, the client will extend Traversal.  By overriding the visit
+ *  method, the client can determine what happens when a node is visited.
+ *  By supplying an appropriate type of Queue object to the constructor,
+ *  the client can control the behavior of the fringe. By overriding the
+ *  shouldPostVisit and postVisit methods, the client can arrange for
+ *  post-visits of a node (as in depth-first search).  By overriding
+ *  the reverseSuccessors and processSuccessor methods, the client can control
+ *  the addition of neighbor vertices to the fringe when a vertex is visited.
+ *
+ *  Traversals may be interrupted or restarted, remembering the previously
+ *  marked vertices.
+ *  @author Yuxi Chen
+ */
+public abstract class Traversal {
+
+    /** A Traversal of G, using FRINGE as the fringe. */
+    protected Traversal(Graph G, Queue<Integer> fringe) {
+        _G = G;
+        _fringe = fringe;
+        _marked = new HashSet<Integer>();
+        _fringeStack = new Stack<Integer>();
+        _reachableSet = new HashSet<Integer>();
+        currentQueue = new LinkedList<Integer>();
+        _testArray = new ArrayList<Integer>();
+        _testArrayPostVisit = new ArrayList<Integer>();
+    }
+
+    /** Unmark all vertices in the graph. */
+    public void clear() {
+        _marked = new HashSet<Integer>();
+    }
+    /** This gets the marked vertices for us.
+        @return
+        */
+
+    HashSet<Integer> getMarked() {
+        return _marked;
+    }
+
+    /** This gets the testing array for us.
+        @return
+         */
+    ArrayList<Integer> getTestArray() {
+        return _testArray;
+    }
+
+    /** This tells us what kind of graph we're dealing with.
+        @return
+         */
+    abstract boolean isDFS();
+
+    /** Initialize the fringe to V0 and perform a traversal. */
+    public void traverse(Collection<Integer> V0) {
+        if (isDFS()) {
+            for (Integer current : V0) {
+                _fringe.add(current);
+            }
+            Integer stacked = _fringe.remove();
+            _fringeStack.push(stacked);
+            int counter = 0;
+            while (!_fringeStack.isEmpty()) {
+                counter += 1;
+                if (counter == 9) {
+                    break;
+                }
+                Integer v = _fringeStack.peek();
+
+                if (!_marked.contains(v)) {
+                    mark(v);
+                    _reachableSet.add(v);
+                    _testArray.add(v);
+                    visit(v);
+                } else {
+                    if (_fringeStack.isEmpty()) {
+                        break;
+                    } else {
+                        boolean marked = true;
+                        for (Integer current : _G.findCurrent(_fringeStack.peek())) {
+                            if (!_marked.contains(current)) {
+                                marked = false;
+                            }
+                        }
+                        System.out.println("Size is: " + _G.findCurrent(_fringeStack.peek()).size());
+                        if (marked) {
+                            System.out.println("I should postveesit" + v);
+                            if (shouldPostVisit(v)) {
+                                System.out.println("Do I get here?");
+                                postVisit(v);
+                                _testArrayPostVisit.add(v);
+                            }
+                            _fringeStack.pop();
+                        }
+                        System.out.println("I got here!");
+                    }
+                }
+            }
+        } else {
+            for (Integer current : V0) {
+                _fringe.add(current);
+            }
+            Integer currentItem = _fringe.remove();
+            currentQueue.add(currentItem);
+            while (!currentQueue.isEmpty()) {
+                Integer v = currentQueue.remove();
+                if (!_marked.contains(v)) {
+                    mark(v);
+                    _reachableSet.add(v);
+                    _testArray.add(v);
+                    visit(v);
+                }
+            }
+        }
+    }
+
+    /** Initialize the fringe to { V0 } and perform a traversal. */
+    public void traverse(int v0) {
+        traverse(Arrays.<Integer>asList(v0));
+    }
+
+    /** Returns true iff V has been marked. */
+    protected boolean marked(int v) {
+        if (_marked.contains(v)) {
+            return true;
+        }
+        return false;
+    }
+
+    /** Mark vertex V. */
+    protected void mark(int v) {
+        _marked.add(v);
+    }
+
+    /** Perform a visit on vertex V.  Returns false iff the traversal is to
+     *  terminate immediately. Optimization purposes. */
+    protected boolean visit(int v) {
+        ArrayList<Integer> currentList = new ArrayList<Integer>();
+        Random rand = new Random();
+        Integer randomInt = 0;
+        if (isDFS()) {
+            if (_G.findCurrent(v).size() == 0 && !_G.isDirected()) {
+                for (Integer current : _G.findUndirected(v)) {
+                    if (!getMarked().contains(current)) {
+                        currentList.add(current);
+                    }
+                }
+                Collections.shuffle(currentList);
+                if (currentList.size() == 0) {
+                    return true;
+                }
+                randomInt = currentList.get(0);
+                _fringeStack.push(randomInt);
+            } else {
+                for (Integer current : _G.findCurrent(v)) {
+                    if (!getMarked().contains(current)) {
+                        currentList.add(current);
+                    }
+                }
+                boolean postVisited = false;
+                Collections.shuffle(currentList);
+                if (currentList.size() == 0) {
+                    if (shouldPostVisit(v)) {
+                        _testArrayPostVisit.add(v);
+                        postVisit(v);
+                        postVisited = true;
+                    }
+                    _fringeStack.pop();
+                    return postVisited;
+                }
+                for (Integer currentItem : currentList) {
+                    _fringeStack.push(currentItem);
+                }
+            }
+            return true;
+        } else {
+            return bfsHelper(currentList, v);
+        }
+    }
+
+    /** This a helper method that deals with when I just visited a vertex
+    on a BFS rather than DFS.
+        @return
+        @param currentList This is my current List.
+        @param v This is an integer.
+        */
+
+    protected boolean bfsHelper(ArrayList<Integer> currentList, int v) {
+        if (_G.findCurrent(v).size() == 0 && !_G.isDirected()) {
+            for (Integer current : _G.findUndirected(v)) {
+                if (!getMarked().contains(current)) {
+                    currentList.add(current);
+                }
+            }
+            Collections.shuffle(currentList);
+            for (Integer currentItem : currentList) {
+                currentQueue.add(currentItem);
+            }
+        } else {
+            for (Integer current : _G.findCurrent(v)) {
+                if (!getMarked().contains(current)) {
+                    currentList.add(current);
+                }
+            }
+            Collections.shuffle(currentList);
+            if (currentList.size() == 0) {
+                return true;
+            }
+            for (Integer currentItem : currentList) {
+                currentQueue.add(currentItem);
+            }
+        }
+        return true;
+    }
+
+
+    /** Return true if we should postVisit V after traversing its
+     *  successors.  (Post-visiting generally is useful only for depth-first
+     *  traversals, although we define it for all traversals.) */
+    protected boolean shouldPostVisit(int v) {
+        boolean allMarked = true;
+        for (Integer current : _G.successors(v)) {
+            if (!_marked.contains(current)) {
+                allMarked = false;
+                break;
+            }
+        }
+        if (allMarked) {
+            return true;
+        }
+        return false;
+    }
+
+    /** Revisit vertex V after traversing its successors.  Returns false iff
+     *  the traversal is to terminate immediately. */
+    protected boolean postVisit(int v) {
+        return true;
+    }
+
+    /** Return true if we should schedule successors of V in reverse order. */
+    protected boolean reverseSuccessors(int v) {
+        return false;
+    }
+
+    /** Process successor V to U.  Returns true iff V is then to
+     *  be added to the fringe.  By default, returns true iff V is unmarked. */
+    protected boolean processSuccessor(int u, int v) {
+        return !marked(v);
+    }
+
+    /** The graph being traversed. */
+    private final Graph _G;
+
+    /** The fringe. */
+    protected final Queue<Integer> _fringe;
+
+    /** HashSet containing all the marked vertices. */
+    private HashSet<Integer> _marked;
+
+    /** Stack containing current fringe. */
+    protected Stack<Integer> _fringeStack;
+
+    /** Queue containing current queue. */
+    protected Queue<Integer> currentQueue;
+
+    /** This shows the things that we have reached. */
+    private HashSet<Integer> _reachableSet;
+
+    /** This holds a testing array. */
+    private ArrayList<Integer> _testArray;
+
+    /** This holds my post visit array. */
+    private ArrayList<Integer> _testArrayPostVisit;
+}
